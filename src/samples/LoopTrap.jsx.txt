@@ -1,0 +1,21 @@
+import { useState } from "react";
+
+export default function LoopTrap() {
+  const [count, setCount] = useState(0);
+
+  // BAD: setter called directly while rendering
+  // setCount(count + 1);
+  // render → setCount → render → setCount → ... forever
+  // React error: "Too many re-renders"
+
+  // ALSO BAD: () missing the arrow, so it runs during render
+  // <button onClick={setCount(count + 1)}>
+
+  // GOOD: only set state inside an event
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Add 1</button>
+    </div>
+  );
+}

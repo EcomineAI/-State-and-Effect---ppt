@@ -1,3 +1,4 @@
+import { Mark } from './Icons.jsx';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 /* ───────── engine HUD ───────── */
@@ -22,7 +23,7 @@ function Engine({ Demo, label }) {
   return (
     <div className="demo" onKeyDown={(e) => e.stopPropagation()}>
       <div className="demo-head">
-        <span>▶ {label || 'Live'}</span>
+        <span><Mark name="play" size={9} /> {label || 'Live'}</span>
         <button type="button" className="mini ghost" onClick={() => { setLog([]); setRun((r) => r + 1); }}>reset</button>
       </div>
       <div className="demo-stage"><Demo key={run} log={push} /></div>
@@ -78,64 +79,6 @@ const Counter = memo(function Counter({ log }) {
   return (
     <div className="dm">
       <button type="button" className="mini wide" onClick={handleIncrement}>Clicked {count} times</button>
-      <RenderBadge n={n} />
-    </div>
-  );
-});
-
-const Player = memo(function Player({ log }) {
-  const n = useRenders();
-  const [player, setPlayer] = useState({ name: 'Ana', level: 1 });
-  return (
-    <div className="dm">
-      <div className="dm-out mono">{JSON.stringify(player)}</div>
-      <button type="button" className="mini" onClick={() => { setPlayer((p) => ({ ...p, level: p.level + 1 })); log('new object via spread → render'); }}>Level up</button>
-      <RenderBadge n={n} />
-    </div>
-  );
-});
-
-const Score = memo(function Score({ log }) {
-  const n = useRenders();
-  const [score, setScore] = useState(0);
-  return (
-    <div className="dm">
-      <div className="dm-out">score: <b>{score}</b></div>
-      <button type="button" className="mini" onClick={() => {
-        setScore((s) => s + 1); setScore((s) => s + 1);
-        log('2 updates queued → batched into 1 render');
-      }}>+1 twice</button>
-      <RenderBadge n={n} />
-    </div>
-  );
-});
-
-const Trap = memo(function Trap({ log }) {
-  const n = useRenders();
-  const [user, setUser] = useState({ name: 'Bob' });
-  return (
-    <div className="dm">
-      <div className="dm-out">on screen: <b>{user.name}</b></div>
-      <button type="button" className="mini bad" onClick={() => {
-        user.name = 'Charlie'; setUser(user);
-        log(`Object.is(old, new) = true → skipped (memory says "${user.name}")`);
-      }}>badUpdate</button>
-      <RenderBadge n={n} />
-    </div>
-  );
-});
-
-const Correct = memo(function Correct({ log }) {
-  const n = useRenders();
-  const [user, setUser] = useState({ name: 'Bob' });
-  return (
-    <div className="dm">
-      <div className="dm-out">on screen: <b>{user.name}</b></div>
-      <button type="button" className="mini good" onClick={() => {
-        const next = { ...user, name: 'Charlie' };
-        log(`Object.is(old, new) = ${Object.is(user, next)} → render`);
-        setUser(next);
-      }}>goodUpdate</button>
       <RenderBadge n={n} />
     </div>
   );
@@ -222,12 +165,184 @@ const TimerDemo = memo(function TimerDemo({ log }) {
   );
 });
 
+/* ───────── section 2 demos ───────── */
+
+const FullName = memo(function FullName({ log }) {
+  const n = useRenders();
+  const [first, setFirst] = useState('Juan');
+  const [last, setLast] = useState('Dela Cruz');
+  const [stored] = useState('Juan Dela Cruz'); // BAD: the stored copy, never updated
+  const fullName = `${first} ${last}`;
+  return (
+    <div className="dm">
+      <input className="inp" value={first} onChange={(e) => { setFirst(e.target.value); log(`setFirst("${e.target.value}") → render`); }} />
+      <input className="inp" value={last} onChange={(e) => { setLast(e.target.value); log(`setLast("${e.target.value}") → render`); }} />
+      <div className="dm-out big"><Mark name="ok" size={14} /> {fullName}</div>
+      <div className="dm-note"><Mark name="no" size={10} /> stored copy: <s>{stored}</s>{stored !== fullName && ' ← out of sync!'}</div>
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+const RenderLogger = memo(function RenderLogger({ log }) {
+  const n = useRenders();
+  const [user, setUser] = useState({ name: 'Bob' });
+  function badUpdate() {
+    const same = user;
+    user.name = 'Charlie';
+    setUser(user);
+    log(`Bad: Object.is(old, new) = ${Object.is(same, user)} → skipped`);
+  }
+  function goodUpdate() {
+    const next = { ...user, name: 'Charlie' };
+    log(`Good: Object.is(old, new) = ${Object.is(user, next)} → render`);
+    setUser(next);
+  }
+  return (
+    <div className="dm">
+      <div className="dm-out">user.name: <b>{user.name}</b></div>
+      <button type="button" className="mini bad" onClick={badUpdate}>Bad Update</button>
+      <button type="button" className="mini good" onClick={goodUpdate}>Good Update</button>
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+const SnapshotLogger = memo(function SnapshotLogger({ log }) {
+  const n = useRenders();
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    setCount(count + 1);
+    log(`setCount(${count + 1}) · console.log(count) → ${count}`);
+  }
+  return (
+    <div className="dm">
+      <div className="dm-out">Count: <b>{count}</b></div>
+      <button type="button" className="mini" onClick={handleClick}>Add 1 + Log</button>
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+const BatchCounter = memo(function BatchCounter({ log }) {
+  const n = useRenders();
+  const [count, setCount] = useState(0);
+  function badAdd() {
+    setCount(count + 1); setCount(count + 1); setCount(count + 1);
+    log(`Bad +3: all read ${count} → ${count + 1} (1 render)`);
+  }
+  function goodAdd() {
+    setCount((c) => c + 1); setCount((c) => c + 1); setCount((c) => c + 1);
+    log(`Good +3: ${count} → ${count + 3} (1 render)`);
+  }
+  return (
+    <div className="dm">
+      <div className="dm-out">Count: <b>{count}</b></div>
+      <button type="button" className="mini bad" onClick={badAdd}>Bad +3</button>
+      <button type="button" className="mini good" onClick={goodAdd}>Good +3</button>
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+/* catches the real "Too many re-renders" error so the deck keeps running */
+class Catch extends React.Component {
+  constructor(p) { super(p); this.state = { err: null }; }
+  static getDerivedStateFromError(err) { return { err }; }
+  componentDidCatch(err) { this.props.onError(err.message.split('.')[0]); }
+  render() { return this.state.err ? <div className="dm-err"><Mark name="boom" size={12} /> {this.state.err.message.split('.')[0]}</div> : this.props.children; }
+}
+function BadLoop() {
+  const [count, setCount] = useState(0);
+  setCount(count + 1); // BAD: setter in the body
+  return <p>Count: {count}</p>;
+}
+
+const LoopTrap = memo(function LoopTrap({ log }) {
+  const n = useRenders();
+  const [count, setCount] = useState(0);
+  const [bad, setBad] = useState(false);
+  return (
+    <div className="dm">
+      <div className="dm-out">Count: <b>{count}</b></div>
+      <button type="button" className="mini good" onClick={() => { setCount(count + 1); log(`event → setCount(${count + 1}) → 1 render`); }}>Add 1</button>
+      <button type="button" className="mini bad" onClick={() => { setBad(true); log('render → setCount → render → …'); }}>Setter in body</button>
+      {bad && <Catch onError={(m) => log(`React: "${m}"`)}><BadLoop /></Catch>}
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+const NameInput = memo(function NameInput({ log }) {
+  const n = useRenders();
+  const [name, setName] = useState('');
+  return (
+    <div className="dm">
+      <label className="dm-note"><Mark name="no" size={10} /> value, no onChange:</label>
+      <input className="inp" value={name} readOnly onKeyDown={() => log('frozen: no onChange, state never changes')} placeholder="try typing…" />
+      <label className="dm-note"><Mark name="ok" size={10} /> controlled:</label>
+      <input className="inp" value={name} onChange={(e) => { setName(e.target.value); log(`onChange → setName("${e.target.value}")`); }} placeholder="type here" />
+      <div className="dm-out">Hello, <b>{name}</b> · Characters: <b>{name.length}</b></div>
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+const StateRecap = memo(function StateRecap({ log }) {
+  const n = useRenders();
+  const [count, setCount] = useState(0);
+  const [todos, setTodos] = useState(['Study React']);
+  const [text, setText] = useState('');
+  const total = todos.length;
+  return (
+    <div className="dm">
+      <div className="dm-out">Count: <b>{count}</b> · Total todos: <b>{total}</b></div>
+      <button type="button" className="mini" onClick={() => { setCount((c) => c + 1); setCount((c) => c + 1); setCount((c) => c + 1); log('3 updaters → +3, 1 render'); }}>+3</button>
+      <input className="inp sm" value={text} onChange={(e) => setText(e.target.value)} placeholder="new todo" />
+      <button type="button" className="mini" onClick={() => { if (!text.trim()) return; setTodos([...todos, text]); setText(''); log(`setTodos([...todos, "${text}"])`); }}>Add</button>
+      <ul className="dm-list">{todos.slice(-3).map((t, i) => <li key={i}>{t}</li>)}</ul>
+      <RenderBadge n={n} />
+    </div>
+  );
+});
+
+const QA = [
+  ['Q1 · re-render?', 'No — same object'],
+  ['Q2 · count after one click?', '1 — all read 0'],
+  ['Q3 · what gets logged?', '0 — snapshot'],
+];
+const QuickCheck = memo(function QuickCheck({ log }) {
+  const [shown, setShown] = useState([false, false, false]);
+  const [left, setLeft] = useState(null);
+  useEffect(() => {
+    if (left === null) return;
+    if (left === 0) { setShown([true, true, true]); log('answers revealed'); return; }
+    const t = setTimeout(() => setLeft(left - 1), 1000);
+    return () => clearTimeout(t);
+  }, [left, log]);
+  return (
+    <div className="dm col">
+      {QA.map(([q, a], i) => (
+        <div key={q} className="qa">
+          <span>{q}</span>
+          {shown[i]
+            ? <b className="ans">{a}</b>
+            : <button type="button" className="mini" onClick={() => setShown(shown.map((s, j) => s || j === i))}>Reveal</button>}
+        </div>
+      ))}
+      <button type="button" className="mini" onClick={() => { setShown([false, false, false]); setLeft(10); log('10 s countdown — answer in the chat!'); }}>
+        {left ? <><Mark name="clock" size={10} /> {left}s</> : 'Start 10 s timer'}
+      </button>
+    </div>
+  );
+});
+
 /* key: `${topic.no}` for single-panel slides, `${topic.no}-${panelIndex}` for split slides */
 const DEMOS = {
   '1.1-0': [PlainVar, 'let count'], '1.1-1': [StateVar, 'useState'],
   '1.2': [Greeting], '1.3': [Counter],
-  '2.1-0': [Player, 'setPlayer'], '2.1-1': [Score, 'setScore'],
-  '2.2-0': [Trap, 'badUpdate'], '2.2-1': [Correct, 'goodUpdate'],
+  '2.1': [FullName], '2.2': [RenderLogger], '2.3': [SnapshotLogger], '2.4': [BatchCounter],
+  '2.5': [LoopTrap], '2.6': [NameInput], '2.7': [StateRecap], '2.8': [QuickCheck, 'Quick Check'],
   '3.1': [TitleUpdater], '3.2': [ProfileDemo], '3.3': [TimerDemo],
 };
 

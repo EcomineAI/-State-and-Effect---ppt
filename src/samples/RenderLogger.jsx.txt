@@ -1,0 +1,24 @@
+import { useState } from "react";
+
+export default function RenderLogger() {
+  const [user, setUser] = useState({ name: "Bob" });
+
+  // BAD: editing the same object
+  function badUpdate() {
+    user.name = "Charlie"; // changed the OLD object
+    setUser(user); // same object → React sees no change → no re-render
+  }
+
+  // GOOD: give React a NEW object
+  function goodUpdate() {
+    setUser({ ...user, name: "Charlie" }); // copy + change → re-render
+  }
+
+  return (
+    <div>
+      <p>user.name: {user.name}</p>
+      <button onClick={badUpdate}>Bad Update</button>
+      <button onClick={goodUpdate}>Good Update</button>
+    </div>
+  );
+}

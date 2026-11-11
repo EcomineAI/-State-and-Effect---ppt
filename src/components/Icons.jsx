@@ -219,6 +219,27 @@ function PixelSprite({ rows }) {
   return <svg viewBox="0 0 16 16" shapeRendering="crispEdges">{rects}</svg>;
 }
 
+/* 8x8 inline marks (replace emoji) */
+const marks = {
+  ok: ['GGGGGGGG', 'GhhhhhhG', 'GhhhhwhG', 'GhhhwwhG', 'GwhwwhhG', 'GwwwhhhG', 'GhwhhhhG', 'GGGGGGGG'],
+  no: ['rr....rr', 'rrr..rrr', '.rrrrrr.', '..rrrr..', '..rrrr..', '.rrrrrr.', 'rrr..rrr', 'rr....rr'],
+  boom: ['...o....', '.o.y..o.', '..yyyo..', 'oyyryyyo', '.oyyry..', '..oyyo..', '.o..y.o.', '....o...'],
+  clock: ['..nnnn..', '.nwwwwn.', 'nwwnwwwn', 'nwwnwwwn', 'nwwnnnwn', 'nwwwwwwn', '.nwwwwn.', '..nnnn..'],
+  play: ['ww......', 'wwww....', 'wwwwww..', 'wwwwwwww', 'wwwwwwww', 'wwwwww..', 'wwww....', 'ww......'],
+  stop: ['........', '.wwwwww.', '.wwwwww.', '.wwwwww.', '.wwwwww.', '.wwwwww.', '.wwwwww.', '........'],
+};
+
+export function Mark({ name, size = 12, color }) {
+  const rows = marks[name];
+  return (
+    <svg className="mark" viewBox="0 0 8 8" width={size} height={size} shapeRendering="crispEdges" aria-hidden="true">
+      {rows.flatMap((row, y) => [...row].map((k, x) => (PAL[k]
+        ? <rect key={`${x}-${y}`} x={x} y={y} width="1.02" height="1.02" fill={color && k === 'w' ? color : PAL[k]} />
+        : null)))}
+    </svg>
+  );
+}
+
 export default function Icon({ name, size = 90, className = '' }) {
   return (
     <div className={`icon pix icon-${name} ${className}`} style={{ width: size, height: size }} aria-hidden="true">

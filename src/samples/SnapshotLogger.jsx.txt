@@ -1,0 +1,17 @@
+import { useState } from "react";
+
+export default function SnapshotLogger() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1); // asks React: "use count + 1 on the NEXT render"
+    console.log(count); // still the OLD value (this render's snapshot)
+  }
+
+  return (
+    <div>
+      <p>Count: {count}</p> {/* shows the new value after re-render */}
+      <button onClick={handleClick}>Add 1 + Log</button>
+    </div>
+  );
+}

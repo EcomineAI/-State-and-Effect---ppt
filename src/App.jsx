@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import slides from './slides.jsx';
+import slides, { navItems } from './slides.jsx';
 import { DeckContext } from './deckContext.js';
 
 const W = 960, H = 540, ANIM_MS = 420;
@@ -124,6 +124,20 @@ export default function App() {
             );
           })}
         </div>
+
+        <nav className="rail" aria-label="Topics">
+          {navItems.map((it, i) => {
+            const end = navItems[i + 1] ? navItems[i + 1].slide : slides.length;
+            const on = cur >= it.slide && cur < end;
+            const gap = i > 0 && it.no[0] !== navItems[i - 1].no[0];
+            return (
+              <button key={it.no} type="button" className={`${on ? 'on' : ''} ${gap ? 'gap' : ''}`}
+                onClick={() => goTo(it.slide)} title={it.label} aria-current={on ? 'step' : undefined}>
+                {it.no}<span className="tip">{it.label}</span>
+              </button>
+            );
+          })}
+        </nav>
 
         <div className={`controls ${idle ? 'idle' : ''}`} role="toolbar" aria-label="Presentation controls">
           <button type="button" onClick={back} disabled={cur === 0} aria-label="Previous slide" title="Previous (←)">

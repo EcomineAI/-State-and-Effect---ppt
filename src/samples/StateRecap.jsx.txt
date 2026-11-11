@@ -1,0 +1,43 @@
+import { useState } from "react";
+
+export default function StateRecap() {
+  const [count, setCount] = useState(0);
+  const [todos, setTodos] = useState(["Study React"]);
+  const [text, setText] = useState("");
+
+  // Rule 1: don't store what you can calculate
+  const total = todos.length;
+
+  // Rule 2: updater function when the new value depends on the old one
+  function addThree() {
+    setCount((c) => c + 1);
+    setCount((c) => c + 1);
+    setCount((c) => c + 1); // +3, batched into 1 re-render
+  }
+
+  // Rule 3: copy, don't edit (new array)
+  function addTodo() {
+    setTodos([...todos, text]); // BAD: todos.push(text)
+    setText(""); // clear the input
+  }
+
+  // Rule 4: never call a setter here (in the body) → infinite loop
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={addThree}>+3</button>
+
+      {/* Rule 5: controlled input, state is the boss */}
+      <input value={text} onChange={(e) => setText(e.target.value)} />
+      <button onClick={addTodo}>Add</button>
+
+      <p>Total todos: {total}</p>
+      <ul>
+        {todos.map((t, i) => (
+          <li key={i}>{t}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}

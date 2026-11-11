@@ -1,0 +1,12 @@
+// Q1: does this re-render?
+user.name = "Ana";
+setUser(user); // same object → NO re-render
+
+// Q2: what is count after one click? (starts at 0)
+setCount(count + 1);
+setCount(count + 1);
+setCount(count + 1); // all read 0 → count = 1
+
+// Q3: what gets logged? (count was 0)
+setCount(5);
+console.log(count); // 0 → the new value shows next render

@@ -1,7 +1,8 @@
 import React from 'react';
+import { Mark } from './Icons.jsx';
 
 const RX =
-  /(\/\/.*$)|('[^']*'|`[^`]*`)|\b(import|from|function|const|let|return)\b|\b(\d+)\b|\b([A-Za-z_$][\w$]*)(?=\()/g;
+  /(\/\/.*$|\{\/\*.*?\*\/\})|('[^']*'|"[^"]*"|`[^`]*`)|\b(import|from|function|const|let|return|export|default)\b|\b(\d+)\b|\b([A-Za-z_$][\w$]*)(?=\()/g;
 
 function highlight(line) {
   const out = [];
@@ -11,6 +12,8 @@ function highlight(line) {
   while ((m = RX.exec(line))) {
     if (m.index > last) out.push(line.slice(last, m.index));
     const cls = m[1] ? 'c-com' : m[2] ? 'c-str' : m[3] ? 'c-kw' : m[4] ? 'c-num' : 'c-fn';
+    const tag = m[1] && (/\bBAD\b/.test(m[0]) ? 'no' : /\bGOOD\b/.test(m[0]) ? 'ok' : null);
+    if (tag) out.push(<Mark key={`m${m.index}`} name={tag} size={11} />);
     out.push(<span key={m.index} className={cls}>{m[0]}</span>);
     last = m.index + m[0].length;
   }

@@ -1,0 +1,20 @@
+import { useState } from "react";
+
+export default function NameInput() {
+  const [name, setName] = useState("");
+
+  return (
+    <div>
+      {/* BAD: value with no onChange → frozen, can't type */}
+      {/* <input value={name} /> */}
+
+      {/* GOOD: state controls the input */}
+      <input
+        value={name} // input shows what's in state
+        onChange={(e) => setName(e.target.value)} // every keystroke saves to state
+      />
+      <p>Hello, {name}</p> {/* updates live */}
+      <p>Characters: {name.length}</p>
+    </div>
+  );
+}

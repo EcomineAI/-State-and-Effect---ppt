@@ -1,0 +1,21 @@
+import { useState } from "react";
+
+export default function FullName() {
+  const [first, setFirst] = useState("Juan");
+  const [last, setLast] = useState("Dela Cruz");
+
+  // BAD: storing something we can calculate
+  // const [fullName, setFullName] = useState("Juan Dela Cruz");
+  // If first or last changes, fullName stays old → out of sync
+
+  // GOOD: just calculate it every render
+  const fullName = `${first} ${last}`;
+
+  return (
+    <div>
+      <input value={first} onChange={(e) => setFirst(e.target.value)} />
+      <input value={last} onChange={(e) => setLast(e.target.value)} />
+      <h1>{fullName}</h1> {/* always correct */}
+    </div>
+  );
+}
