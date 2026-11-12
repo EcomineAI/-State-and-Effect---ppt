@@ -1,9 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import slides, { navItems, sectionStarts } from './slides.jsx';
+import { BootScreen, shouldBoot } from './components/Opening.jsx';
 import { Clouds, SectionLoader } from './components/Fx.jsx';
 import { DeckContext } from './deckContext.js';
 
-const W = 960, H = 540, ANIM_MS = 420;
+const W = 960, H = 540, ANIM_MS = 520;
+
+/* Each kind of slide gets its own entrance:
+   title/section start → crt · ice-breaker → flip · outline → drop
+   definition → wipe · rules → zoom · code → slide · recap → pixel */
+const TOPIC_START = navItems.find((n) => n.no === '1.1').slide;
+function transitionFor(i) {
+  if (i === 0 || sectionStarts[i]) return 'crt';
+  if (i === slides.length - 1) return 'pixel';
+  if (i < TOPIC_START) return ['crt', 'flip', 'drop'][i];
+  return ['wipe', 'zoom', 'slide'][(i - TOPIC_START) % 3];
+}
 const clamp = (n) => Math.max(0, Math.min(slides.length - 1, n));
 const fromHash = () => {
   const n = parseInt(window.location.hash.replace('#', ''), 10);
@@ -19,6 +31,7 @@ export default function App() {
   const [idle, setIdle] = useState(false);
   const [isFs, setIsFs] = useState(false);
   const [loading, setLoading] = useState(null);
+  const [booting, setBooting] = useState(shouldBoot);
   const loadTimer = useRef();
   const curRef = useRef(cur);
   const timer = useRef();
@@ -122,13 +135,14 @@ export default function App() {
     <DeckContext.Provider value={ctx}>
       <div className="deck" ref={rootRef}>
         <Clouds />
+        {booting && <BootScreen onDone={() => setBooting(false)} />}
         {loading && <SectionLoader key={loading} name={loading} />}
         <div className="stage" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
           {slides.map((s, i) => {
             const state = i === cur ? 'active' : i === prev ? 'leaving' : null;
             if (!state) return null;
             return (
-              <div key={i} className={`slide ${state} ${dir > 0 ? 'fwd' : 'bwd'}`} aria-hidden={state !== 'active'}>
+              <div key={i} className={`slide ${state} ${dir > 0 ? 'fwd' : 'bwd'} t-${transitionFor(cur)}`} aria-hidden={state !== 'active'}>
                 {s}
               </div>
             );

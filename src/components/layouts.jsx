@@ -116,13 +116,38 @@ export function PointsSlide({ file, icon, label, heading, points, status }) {
 /* 5 ─ Code: one or two panels (diff layout) */
 function Panel({ tag, tagKind, code, caption, size, demo }) {
   const [run, setRun] = useState(false);
+  const [full, setFull] = useState(false);
+  const fitRef = React.useRef(null);
+  // full view: pick the biggest font size where every line fits without scrolling
+  React.useLayoutEffect(() => {
+    const el = full && fitRef.current?.querySelector('.code');
+    if (!el) return;
+    for (let px = 34; px >= 8; px -= 0.5) {
+      el.style.fontSize = `${px}px`;
+      if (el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1) break;
+    }
+  }, [full, code]);
+  React.useEffect(() => {
+    if (!full) return undefined;
+    const esc = (e) => { if (e.key === 'Escape') { e.stopPropagation(); setFull(false); } };
+    window.addEventListener('keydown', esc, true);
+    return () => window.removeEventListener('keydown', esc, true);
+  }, [full]);
   return (
-    <div className="panel">
+    <div className={`panel ${full ? 'full' : ''}`}>
       <div className="panel-tag">
         <span className={tagKind}>{tag.split('·')[0].trim()}</span>
         {tag.includes('·') && <span> · {tag.split('·')[1].trim()}</span>}
+        <button type="button" className="fullbtn" onClick={() => setFull(!full)} title={full ? 'Exit full view (Esc)' : 'Full view'}>
+          <svg viewBox="0 0 14 14" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2">
+            {full ? <path d="M5 1 V5 H1 M9 1 V5 H13 M5 13 V9 H1 M9 13 V9 H13" /> : <path d="M1 5 V1 H5 M9 1 H13 V5 M13 9 V13 H9 M5 13 H1 V9" />}
+          </svg>
+          {full ? 'exit' : 'full view'}
+        </button>
       </div>
-      {demo && run ? <div className="panel-demo"><LiveDemo id={demo} /></div> : <Code code={code} size={size} />}
+      {demo && run && !full ? <div className="panel-demo"><LiveDemo id={demo} /></div>
+        : full ? <div className="code-fit" ref={fitRef}><Code code={code} size={size} /></div>
+        : <Code code={code} size={size} />}
       {caption && <p className="panel-cap"><Inline text={caption} /></p>}
       {demo && (
         <button type="button" className={`runbtn ${run ? 'on' : ''}`} onClick={() => setRun(!run)}>

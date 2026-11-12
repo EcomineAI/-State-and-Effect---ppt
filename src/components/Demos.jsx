@@ -1,5 +1,5 @@
 import { Mark } from './Icons.jsx';
-import { Confetti } from './Fx.jsx';
+import { Confetti, JohnPork } from './Fx.jsx';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 /* ───────── engine HUD ───────── */
@@ -67,6 +67,7 @@ const Greeting = memo(function Greeting({ log }) {
   return (
     <div className="dm">
       <div className="dm-out big">Hello, {name}!</div>
+      {/june/i.test(name) && <JohnPork />}
       <button type="button" className="mini" onClick={() => { setName('June Vic'); log(name === 'June Vic' ? "setName('June Vic') · same value, bail out" : "setName('June Vic') → re-render"); }}>Change Name</button>
       <RenderBadge n={n} />
     </div>
@@ -179,6 +180,7 @@ const FullName = memo(function FullName({ log }) {
       <input className="inp" value={first} onChange={(e) => { setFirst(e.target.value); log(`setFirst("${e.target.value}") → render`); }} />
       <input className="inp" value={last} onChange={(e) => { setLast(e.target.value); log(`setLast("${e.target.value}") → render`); }} />
       <div className="dm-out big"><Mark name="ok" size={14} /> {fullName}</div>
+      {/june/i.test(fullName) && <JohnPork />}
       <div className="dm-note"><Mark name="no" size={10} /> stored copy: <s>{stored}</s>{stored !== fullName && ' ← out of sync!'}</div>
       <RenderBadge n={n} />
     </div>

@@ -438,3 +438,95 @@ button.wbtn:hover { filter: brightness(1.15); }
 .vid video { display: block; width: 100%; background: #000; }
 .vid.big video { flex: 1; min-height: 0; object-fit: contain; }
 .vid-credit { font-family: var(--pix); font-size: 10.5px; color: #cfe1ff; padding: 4px 8px; }
+
+/* easter egg */
+.demo-stage { position: relative; }
+.pork {
+  position: absolute; right: 6px; bottom: -2px; padding: 0; border: 0; background: none; cursor: pointer; z-index: 3;
+  animation: porkPeek .6s steps(4) both, porkBob 1s steps(2) .6s infinite;
+}
+.pork svg { display: block; image-rendering: pixelated; }
+@keyframes porkPeek { from { transform: translateY(40px); opacity: 0; } }
+@keyframes porkBob { 50% { transform: translateY(-3px); } }
+.pork-bubble {
+  position: absolute; right: 30px; bottom: 46px; white-space: nowrap;
+  font-family: var(--pix); font-size: 10.5px; color: var(--navy);
+  background: #fff; border: 2px solid var(--navy); box-shadow: 2px 2px 0 var(--navy); padding: 3px 7px;
+  animation: drop .25s steps(3);
+}
+
+/* easter egg v2: tiny, sits on top of the reset button, no looping motion */
+.demo { position: relative; }
+.demo-stage { position: static; }
+.pork { right: 12px; top: -16px; bottom: auto; animation: porkPeek .4s steps(3) both; opacity: .85; }
+.pork:hover { opacity: 1; }
+.pork-bubble { right: 20px; bottom: auto; top: -4px; font-size: 9.5px; padding: 2px 5px; }
+@keyframes porkPeek { from { transform: translateY(10px); opacity: 0; } }
+
+/* ═════════ opening: boot ═════════ */
+.boot { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; cursor: pointer;
+  background: radial-gradient(circle at 50% 45%, #13286b, #070d24 70%); color: #cfe1ff; }
+.boot.out { animation: bootOut .45s steps(5) both; }
+@keyframes bootOut { 0% { filter: brightness(2.5); } 100% { opacity: 0; transform: scaleY(.02); } }
+.boot-box { width: 360px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.boot-box .icon.pix { animation: none; }
+.boot-name { font-family: var(--pix); font-size: 26px; color: #fff; letter-spacing: .04em; }
+.boot-name small { font-size: 12px; color: #7fb2ff; }
+.boot-lines { align-self: stretch; font-family: var(--pix); font-size: 13px; line-height: 1.8; min-height: 72px; }
+.boot-lines div { opacity: 0; }
+.boot-lines div.on { opacity: 1; animation: type .25s steps(3); }
+.boot-lines b { color: #7dff9a; font-weight: 400; }
+.boot .loader-track { align-self: stretch; border-color: #7fb2ff; background: #0d1430; }
+.boot .loader-track i { animation: none; transition: width .5s steps(5); }
+.boot-skip { font-family: var(--pix); font-size: 10px; color: #6b7ab0; animation: blink 1.2s steps(1) infinite; }
+
+/* ═════════ page transition variations (class t-* = the incoming slide's type) ═════════ */
+.stage { perspective: 1400px; }
+/* leaving slide: quick fade for every non-"slide" variation */
+.slide.leaving:not(.t-slide) { animation: tOut .3s steps(4) both !important; }
+@keyframes tOut { to { opacity: 0; } }
+
+/* wipe: reveal sweeps in from the direction of travel */
+.slide.active.t-wipe.fwd { animation: wipeF .5s steps(10) both; }
+.slide.active.t-wipe.bwd { animation: wipeB .5s steps(10) both; }
+@keyframes wipeF { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0); } }
+@keyframes wipeB { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+
+/* zoom: window pops up from small */
+.slide.active.t-zoom { animation: zoomIn .45s steps(6) both; }
+@keyframes zoomIn { from { opacity: 0; transform: scale(.82); } 70% { transform: scale(1.02); } }
+
+/* crt: thin line expands like an old TV turning on */
+.slide.active.t-crt { animation: crtOn .55s steps(7) both; }
+@keyframes crtOn { 0% { transform: scale(1, .01); filter: brightness(3); opacity: 1; } 45% { transform: scale(1, .01) ; filter: brightness(3); } 100% { transform: none; filter: none; } }
+
+/* flip: card turns over */
+.slide.active.t-flip { animation: flipIn .55s steps(8) both; transform-origin: 50% 50%; }
+@keyframes flipIn { from { transform: rotateY(90deg); opacity: 0; } 60% { opacity: 1; } to { transform: none; } }
+
+/* drop: falls in and bounces */
+.slide.active.t-drop { animation: dropIn .5s steps(7) both; }
+@keyframes dropIn { 0% { transform: translateY(-110%); } 70% { transform: translateY(14px); } 85% { transform: translateY(-5px); } 100% { transform: none; } }
+
+/* pixel: chunky pixel dissolve */
+.slide.active.t-pixel { animation: pixelIn .6s steps(6) both; }
+@keyframes pixelIn { 0% { opacity: 0; filter: blur(6px) contrast(4); transform: scale(1.04); } 100% { opacity: 1; filter: none; transform: none; } }
+
+/* full view of a code panel: covers the whole slide (fixed inside the scaled stage) */
+.panel-tag { display: flex; align-items: center; gap: 0; }
+.fullbtn {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+  font-family: var(--pix); font-size: 10px; text-transform: lowercase; color: var(--navy);
+  background: #fff; border: 1.5px solid var(--navy); padding: 1px 6px; box-shadow: 1px 1px 0 var(--navy);
+}
+.fullbtn:hover { background: #dbe6fb; }
+.panel.full {
+  position: fixed; inset: 14px; z-index: 30; display: flex; flex-direction: column; max-height: none;
+  border: 2px solid var(--navy) !important; border-radius: 4px; box-shadow: 8px 8px 0 rgba(16, 32, 79, .78);
+  animation: zoomIn .3s steps(4) both;
+}
+.panel.full .code { flex: 1; overflow: auto; min-height: 0; }
+.panel.full .panel-cap, .panel.full .runbtn { display: none; }
+.panel.full .code-fit { flex: 1; min-height: 0; display: flex; }
+.panel.full .code-fit .code { flex: 1; height: 100%; overflow: hidden; }
+.panel.full .code-line { animation: none !important; }

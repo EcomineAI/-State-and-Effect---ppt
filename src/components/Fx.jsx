@@ -82,3 +82,36 @@ export function SectionLoader({ name }) {
     </div>
   );
 }
+
+/* ── easter egg: tiny pixel pig-man peeks out when "June" is on screen ── */
+const PORK = [
+  '..nn........nn..',
+  '.nKkn......nkKn.',
+  '.nkkknnnnnnkkkn.',
+  '..nkkkkkkkkkkn..',
+  '.nkkkkkkkkkkkkn.',
+  '.nkkwekkkkwekkn.',
+  '.nkkeekkkkeekkn.',
+  'nkkkkkKKKKkkkkkn',
+  'nkkkkKkeekKkkkkn',
+  'nkkkkKkeekKkkkkn',
+  '.nkkkkKKKKkkkkn.',
+  '..nkkkkkkkkkkn..',
+  '...nnnwwwwnnn...',
+  '..nddddwrwdddn..',
+  '.nddddwwrwwdddn.',
+  'nddddddrrdddddn.',
+];
+const PORK_PAL = { n: '#10204f', k: '#f4a6b8', K: '#d97a92', w: '#ffffff', e: '#10204f', d: '#2b2f3a', r: '#c8321e' };
+export function JohnPork() {
+  const [ring, setRing] = React.useState(false);
+  return (
+    <button type="button" className="pork" onClick={() => setRing(!ring)} title="Who is this?" aria-label="Easter egg">
+      {ring && <span className="pork-bubble">John Pork is calling<span className="dots" /></span>}
+      <svg viewBox="0 0 16 16" shapeRendering="crispEdges" width="18" height="18">
+        {PORK.flatMap((row, y) => [...row].map((k, x) => (PORK_PAL[k]
+          ? <rect key={`${x}-${y}`} x={x} y={y} width="1.02" height="1.02" fill={PORK_PAL[k]} /> : null)))}
+      </svg>
+    </button>
+  );
+}
