@@ -530,3 +530,33 @@ button.wbtn:hover { filter: brightness(1.15); }
 .panel.full .code-fit { flex: 1; min-height: 0; display: flex; }
 .panel.full .code-fit .code { flex: 1; height: 100%; overflow: hidden; }
 .panel.full .code-line { animation: none !important; }
+
+/* concept slides: short text → bigger, calmer type */
+.concept .body { font-size: 23px; line-height: 1.4; }
+.concept .h3 { font-size: 21px; margin-bottom: 12px; color: var(--blue); }
+.cols2 { margin-top: 30px; }
+
+/* guess the icon: outline → ringing → reveal */
+.gi {
+  position: relative; flex: none; width: 240px; height: 240px; overflow: hidden;
+  background: #fff; border: 2px solid var(--navy); box-shadow: 4px 4px 0 var(--navy);
+}
+.gi img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gi-react { object-fit: contain; padding: 24px; filter: brightness(0); }
+.gi-pork { object-fit: cover; opacity: 0; }
+.gi-1 .gi-react { animation: ring .1s steps(2) infinite alternate; }
+@keyframes ring { from { transform: translate(-5px, 0) rotate(-7deg); } to { transform: translate(5px, 0) rotate(7deg); } }
+.gi-call {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 0; text-align: center;
+  font-family: var(--pix); font-size: 12px; color: #fff; background: var(--green); animation: blink .5s steps(1) infinite;
+}
+.gi-2 .gi-react { display: none; }
+.gi-2 .gi-pork { opacity: 1; animation: porkPop .65s steps(7) both; }
+@keyframes porkPop {
+  0% { transform: scale(.15) rotate(-25deg); filter: brightness(3); }
+  60% { transform: scale(1.14) rotate(5deg); filter: brightness(1.4); }
+  100% { transform: none; filter: none; }
+}
+.gi::after { content: ''; position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.gi-2::after { animation: whiteFlash .6s steps(6); }
+@keyframes whiteFlash { from { opacity: 1; } to { opacity: 0; } }

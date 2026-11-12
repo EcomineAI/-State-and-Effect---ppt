@@ -263,23 +263,49 @@ const QUIZ = [
     answer: 'State',
     why: 'And that’s exactly today’s lesson.',
   },
+  {
+    kind: 'icon',
+    q: 'What is this icon? Answer in the chat, then we reveal.',
+    answer: 'John Pork',
+    why: 'The outline said React. The call said John Pork.',
+  },
 ];
 const LETTERS = ['A', 'B', 'C', 'D'];
+
+/* Guess the icon: React-shaped silhouette → ringing → John Pork pops in */
+function GuessIcon({ stage }) {
+  return (
+    <div className={`gi gi-${stage}`} aria-label="Guess the icon">
+      <img className="gi-react" src="img/react-logo.png" alt="" />
+      <img className="gi-pork" src="img/john-pork.jpg" alt={stage === 2 ? 'John Pork' : ''} />
+      {stage === 1 && <div className="gi-call">Incoming call<span className="dots" /></div>}
+    </div>
+  );
+}
 
 export function IcebreakerSlide() {
   const [idx, setIdx] = useState(0);
   const [picked, setPicked] = useState(null);
   const [shown, setShown] = useState(false);
+  const [stage, setStage] = useState(0); // icon question: 0 outline · 1 ringing · 2 revealed
+  const timer = React.useRef();
+  React.useEffect(() => () => clearTimeout(timer.current), []);
   const item = QUIZ[idx];
-  const done = item.kind === 'choice' ? picked !== null : shown;
-  const go = (n) => { setIdx(n); setPicked(null); setShown(false); };
+  const revealed = item.kind === 'icon' ? stage === 2 : shown;
+  const done = item.kind === 'choice' ? picked !== null : revealed;
+  const reveal = () => {
+    if (item.kind !== 'icon') { setShown(true); return; }
+    setStage(1);
+    timer.current = setTimeout(() => setStage(2), 1600);
+  };
+  const go = (n) => { clearTimeout(timer.current); setIdx(n); setPicked(null); setShown(false); setStage(0); };
   return (
     <Window title={`icebreaker.exe - Question ${idx + 1} of ${QUIZ.length}`} bar={41}
-      status={done ? item.why : item.kind === 'choice' ? 'Answer in the chat: A, B, C or D' : 'Type your answer in the chat, then reveal'}>
+      status={done ? item.why : item.kind === 'choice' ? 'Answer in the chat: A, B, C or D' : stage === 1 ? 'Incoming call…' : 'Type your answer in the chat, then reveal'}>
       <div className="ib">
-        <Icon name={item.kind === 'id' ? 'magnifier' : 'cursor'} size={88} />
+        {item.kind === 'icon' ? <GuessIcon stage={stage} /> : <Icon name={item.kind === 'id' ? 'magnifier' : 'cursor'} size={88} />}
         <div className="ib-main">
-          <h2 className="h2 sm">{item.kind === 'id' ? 'Identification' : 'Situational'}</h2>
+          <h2 className="h2 sm">{item.kind === 'icon' ? 'Guess the icon' : item.kind === 'id' ? 'Identification' : 'Situational'}</h2>
           <p className="ib-q">{item.q}</p>
           {item.kind === 'choice' ? (
             <div className="ib-choices">
@@ -296,11 +322,11 @@ export function IcebreakerSlide() {
             </div>
           ) : (
             <div className="ib-id">
-              <span className="ib-blank">{shown ? item.answer : '_ _ _ _ _'}</span>
-              {!shown && <button type="button" className="pixbtn sm" onClick={() => setShown(true)}>Reveal answer</button>}
+              <span className="ib-blank">{revealed ? item.answer : '_ _ _ _ _'}</span>
+              {!revealed && stage === 0 && <button type="button" className="pixbtn sm" onClick={reveal}>Reveal answer</button>}
             </div>
           )}
-          {((item.kind === 'choice' && picked === item.answer) || (item.kind === 'id' && shown)) && <Confetti key={idx} />}
+          {((item.kind === 'choice' && picked === item.answer) || (item.kind !== 'choice' && revealed)) && <Confetti key={idx} />}
           <div className="ib-nav">
             <button type="button" className="mini" disabled={idx === 0} onClick={() => go(idx - 1)}>Prev</button>
             <span>{QUIZ.map((_, i) => <i key={i} className={i === idx ? 'on' : ''} />)}</span>
