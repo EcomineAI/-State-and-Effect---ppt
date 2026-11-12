@@ -61,11 +61,11 @@ const topics = [
       subtitle: 'Create state with an initial value, then change it through the setter.',
       size: 14.5,
       panels: [{ tag: 'GREETING COMPONENT', tagKind: '',
-        code: `import { useState } from 'react';\n\nfunction Greeting() {\n  // name: current state value | setName: updater function\n  const [name, setName] = useState('Guest');\n\n  return (\n    <div>\n      <p>Hello, {name}!</p>\n      <button onClick={() => setName('Kuya')}>Change Name</button>\n    </div>\n  );\n}` }],
+        code: `import { useState } from 'react';\n\nfunction Greeting() {\n  // name: current state value | setName: updater function\n  const [name, setName] = useState('Guest');\n\n  return (\n    <div>\n      <p>Hello, {name}!</p>\n      <button onClick={() => setName('June Vic')}>Change Name</button>\n    </div>\n  );\n}` }],
       notes: [
         '`name` holds the current state value; it starts as \'Guest\'.',
         '`setName` is the updater function for that value.',
-        'Clicking the button calls `setName(\'Kuya\')`, so React re-renders and shows Hello, Kuya!',
+        'Clicking the button calls `setName(\'June Vic\')`, so React re-renders and shows Hello, June Vic!',
       ],
     },
   },
@@ -102,7 +102,7 @@ const topics = [
     left: { head: 'Definition', text: 'Updating state means calling the setter function (like `setCount`) to give React a new value. React then shows that new value on screen.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'The setter doesn’t edit the old value. It replaces it completely. Also, don’t keep values in state that you can calculate from other values. If you store the same thing twice, the two copies can get out of sync and cause bugs.' },
     status: 'Key idea: the setter replaces; calculate what you can, store only what you must',
-    icon: 'clipboard', heading: 'Kuya’s Confession Room Rules',
+    icon: 'clipboard', heading: 'Rules to Remember',
     points: [
       { term: 'Setter Replaces', text: '`setUser(x)` swaps the whole value. It doesn’t merge in changes.' },
       { term: 'Keep It Minimal', text: 'If you can calculate it, don’t store it.' },
@@ -122,7 +122,7 @@ const topics = [
     left: { head: 'Definition', text: 'A re-render is when React runs your component function again to get new JSX, compares it with the previous result, and updates only the parts of the real DOM that changed.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'When you call a setter, React asks: “Is this the same value as before?” If you edited the old object and passed it back, it’s the same object, so React thinks nothing changed and skips the re-render. If you pass a new object or a different value, React re-renders and updates only what changed on screen.' },
     status: 'Key idea: same object means no re-render; a new object means re-render',
-    icon: 'cycle', heading: 'Kuya’s Confession Room Rules',
+    icon: 'cycle', heading: 'Rules to Remember',
     points: [
       { term: 'Same Value Check', text: 'React uses `Object.is` to check if the new state is the same as the old one.' },
       { term: 'Skip If Same', text: 'Same value or same object → no re-render.' },
@@ -142,7 +142,7 @@ const topics = [
     left: { head: 'Definition', text: 'A snapshot means each render has its own fixed copy of state. The value doesn’t change in the middle of a render.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'Calling `setCount(count + 1)` doesn’t change `count` right away. It tells React: “Next render, use this new value.” So if you `console.log(count)` right after the setter, you still see the old number. The new value only shows up when React renders again.' },
     status: 'Key idea: the setter schedules; the new value appears on the next render',
-    icon: 'magnifier', heading: 'Kuya’s Confession Room Rules',
+    icon: 'magnifier', heading: 'Rules to Remember',
     points: [
       { term: 'No Instant Change', text: 'The setter schedules the update. It doesn’t change the variable immediately.' },
       { term: 'Fixed Per Render', text: 'Inside one render, `count` is always the same number.' },
@@ -162,7 +162,7 @@ const topics = [
     left: { head: 'Definition', text: 'An updater function is a function you pass to the setter, like `setCount(c => c + 1)`, that receives the latest state value.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'React batches updates. If you call setters several times in one click, React waits and re-renders only once. With `setCount(count + 1)` three times, all three read the same old `count`, so you only get +1. With `setCount(c => c + 1)`, each call gets the latest value, so they stack and you get +3.' },
     status: 'Key idea: many setter calls → one render; use prev => when it depends on the old value',
-    icon: 'chip', heading: 'Kuya’s Confession Room Rules',
+    icon: 'chip', heading: 'Rules to Remember',
     points: [
       { term: 'Batching', text: 'Multiple setter calls in one event → one re-render.' },
       { term: 'Use prev =>', text: 'If the new value depends on the old value, use an updater function.' },
@@ -182,7 +182,7 @@ const topics = [
     left: { head: 'Definition', text: 'An infinite loop happens when setting state causes a render, and that render sets state again, forever.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'Setting state causes a re-render. If you call a setter directly inside the component body (not inside a click or an effect), it runs on every render. That causes another render, which runs the setter again. React catches this and throws a “Too many re-renders” error.' },
     status: 'Key idea: set state in events or effects, never in the component body',
-    icon: 'lock', heading: 'Kuya’s Confession Room Rules',
+    icon: 'lock', heading: 'Rules to Remember',
     points: [
       { term: 'Not in the Body', text: 'Never call a setter directly while rendering.' },
       { term: 'Keep the Arrow', text: '`onClick={() => setCount(count + 1)}`, not `onClick={setCount(count + 1)}`.' },
@@ -202,7 +202,7 @@ const topics = [
     left: { head: 'Definition', text: 'A controlled component is an input whose value comes from state, and every change updates that state.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'Normally an input keeps its own text. In a controlled input, React’s state is the boss. `value={name}` makes the input show what’s in state, and `onChange` saves each keystroke back to state. Because the text is always in state, you can check it, change it, or show it anywhere live.' },
     status: 'Key idea: value + onChange — state controls the input',
-    icon: 'cursor', heading: 'Kuya’s Confession Room Rules',
+    icon: 'cursor', heading: 'Rules to Remember',
     points: [
       { term: 'State Is the Boss', text: 'The input shows only what’s in state.' },
       { term: 'Every Keystroke Updates', text: '`onChange` → `setName(e.target.value)`.' },
@@ -222,7 +222,7 @@ const topics = [
     left: { head: 'Definition', text: 'State is a component’s memory. When you update it the right way, React re-renders and the screen stays in sync with your data.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'Every time you call a setter, React checks whether the value is new. If it is, React runs your component again, compares the new JSX with the old, and updates only the parts that changed. Bugs happen when we skip these rules: editing objects directly, expecting the value to change instantly, or setting state while rendering.' },
     status: 'Key idea: copy, don’t edit · snapshot rule · use prev =>',
-    icon: 'file', heading: 'Kuya’s Confession Room Rules',
+    icon: 'file', heading: 'Rules to Remember',
     points: [
       { term: 'Copy, Don’t Edit', text: 'Always give the setter a new object or array.' },
       { term: 'Snapshot Rule', text: 'The new value shows on the next render, not right away.' },
@@ -242,7 +242,7 @@ const topics = [
     left: { head: 'Definition', text: 'Three quick questions before we move on to side effects.' },
     right: { head: 'Explanation & Inner Mechanics', text: 'Ask the class to answer in the chat. Reveal the answers after about 10 seconds.' },
     status: 'State is how React remembers. Next up, useEffect: how React talks to things outside the component.',
-    icon: 'clipboard', heading: 'Kuya’s Confession Room Rules',
+    icon: 'clipboard', heading: 'Rules to Remember',
     points: [
       { term: 'Q1', text: '`user.name = "Ana"; setUser(user);` Will it re-render? → No, same object' },
       { term: 'Q2', text: '`setCount(count + 1)` three times starting from 0. What’s the result? → 1' },
@@ -335,6 +335,15 @@ const topics = [
   },
 ];
 
+/* Explainer videos by Santos, Great Michael G. (served from public/videos) */
+const BY = 'Santos, Great Michael G.';
+const videos = {
+  '2.2': { src: 'videos/2.2-mutation-vs-copy.mp4', by: BY },
+  '2.3': { src: 'videos/2.3-snapshot.mp4', by: BY },
+  '2.4': { src: 'videos/2.4-batching.mp4', by: BY },
+  '2.5': { src: 'videos/2.5-infinite-loop.mp4', by: BY },
+};
+
 /* ───────── Deck assembly ───────── */
 
 const slides = [];
@@ -382,7 +391,7 @@ topics.forEach((t) => {
     <CodeSlide
       file={t.code.file} section={`${t.no} ${t.short}`} title={t.code.title}
       subtitle={t.code.subtitle} panels={t.code.panels} notes={t.code.notes}
-      size={t.code.size} demo={t.no}
+      size={t.code.size} demo={t.no} video={videos[t.no]}
     />,
   );
 });

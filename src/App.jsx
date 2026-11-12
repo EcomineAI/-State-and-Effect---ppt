@@ -71,7 +71,7 @@ export default function App() {
     const onKey = (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       // let Space/Enter activate focused buttons (live demos) instead of advancing
-      if ((e.key === ' ' || e.key === 'Enter') && e.target.closest?.('button, input, select')) return;
+      if ((e.key === ' ' || e.key === 'Enter') && e.target.closest?.('button, input, select, video')) return;
       const k = e.key;
       if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); next(); }
       else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); back(); }

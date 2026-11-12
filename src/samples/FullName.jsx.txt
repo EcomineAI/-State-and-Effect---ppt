@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 export default function FullName() {
-  const [first, setFirst] = useState("Juan");
-  const [last, setLast] = useState("Dela Cruz");
+  const [first, setFirst] = useState("June");
+  const [last, setLast] = useState("Vic");
 
   // BAD: storing something we can calculate
-  // const [fullName, setFullName] = useState("Juan Dela Cruz");
+  // const [fullName, setFullName] = useState("June Vic");
   // If first or last changes, fullName stays old → out of sync
 
   // GOOD: just calculate it every render

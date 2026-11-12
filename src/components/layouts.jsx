@@ -133,7 +133,22 @@ function Panel({ tag, tagKind, code, caption, size, demo }) {
   );
 }
 
-export function CodeSlide({ file, section, title, subtitle, panels, notes, size = 15, status, demo }) {
+/* Explainer video with credit; "Expand" lets it cover the whole code area */
+function VideoBox({ video }) {
+  const [big, setBig] = useState(false);
+  return (
+    <div className={`vid ${big ? 'big' : ''}`}>
+      <div className="vid-head">
+        <span><Mark name="play" size={9} /> {video.src.split('/').pop()}</span>
+        <button type="button" className="mini ghost" onClick={() => setBig(!big)}>{big ? 'shrink' : 'expand'}</button>
+      </div>
+      <video src={video.src} controls playsInline preload="metadata" />
+      <div className="vid-credit">Video by {video.by}</div>
+    </div>
+  );
+}
+
+export function CodeSlide({ file, section, title, subtitle, panels, notes, size = 15, status, demo, video }) {
   const split = panels.length === 2;
   const [tab, setTab] = useState('run');
   const single = demo && hasDemo(demo);
@@ -150,13 +165,14 @@ export function CodeSlide({ file, section, title, subtitle, panels, notes, size 
           <div className="panels one">
             <Panel {...panels[0]} size={size} />
             <aside className="notes">
-              {single && (
+              {(single || video) && (
                 <div className="tabs" role="tablist">
                   <button type="button" role="tab" aria-selected={tab === 'run'} className={tab === 'run' ? 'on' : ''} onClick={() => setTab('run')}><Mark name="play" size={9} color="currentColor" /> Run</button>
+                  {video && <button type="button" role="tab" aria-selected={tab === 'video'} className={tab === 'video' ? 'on' : ''} onClick={() => setTab('video')}>Video</button>}
                   <button type="button" role="tab" aria-selected={tab === 'notes'} className={tab === 'notes' ? 'on' : ''} onClick={() => setTab('notes')}>Notes</button>
                 </div>
               )}
-              {single && tab === 'run' ? <LiveDemo id={demo} /> : (
+              {video && tab === 'video' ? <VideoBox video={video} /> : single && tab === 'run' ? <LiveDemo id={demo} /> : (
                 <>
                   <h3 className="h3 sm">Read it like this</h3>
                   {notes.map((n, i) => <p key={i} className="body sm"><Inline text={n} /></p>)}

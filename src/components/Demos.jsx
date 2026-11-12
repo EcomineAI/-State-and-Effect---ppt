@@ -67,7 +67,7 @@ const Greeting = memo(function Greeting({ log }) {
   return (
     <div className="dm">
       <div className="dm-out big">Hello, {name}!</div>
-      <button type="button" className="mini" onClick={() => { setName('Kuya'); log(name === 'Kuya' ? "setName('Kuya') · same value, bail out" : "setName('Kuya') → re-render"); }}>Change Name</button>
+      <button type="button" className="mini" onClick={() => { setName('June Vic'); log(name === 'June Vic' ? "setName('June Vic') · same value, bail out" : "setName('June Vic') → re-render"); }}>Change Name</button>
       <RenderBadge n={n} />
     </div>
   );
@@ -170,9 +170,9 @@ const TimerDemo = memo(function TimerDemo({ log }) {
 
 const FullName = memo(function FullName({ log }) {
   const n = useRenders();
-  const [first, setFirst] = useState('Juan');
-  const [last, setLast] = useState('Dela Cruz');
-  const [stored] = useState('Juan Dela Cruz'); // BAD: the stored copy, never updated
+  const [first, setFirst] = useState('June');
+  const [last, setLast] = useState('Vic');
+  const [stored] = useState('June Vic'); // BAD: the stored copy, never updated
   const fullName = `${first} ${last}`;
   return (
     <div className="dm">

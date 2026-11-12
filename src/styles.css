@@ -429,3 +429,12 @@ button.wbtn:hover { filter: brightness(1.15); }
 @media (prefers-reduced-motion: reduce) {
   .clouds, .confetti, .sparkles, .loader { display: none; }
 }
+
+/* explainer videos */
+.panels.one { position: relative; }
+.vid { background: #0d1430; border: 2px solid var(--navy); box-shadow: 3px 3px 0 rgba(16, 32, 79, .6); animation: crt .35s steps(4) both; }
+.vid.big { position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; }
+.vid-head { display: flex; justify-content: space-between; align-items: center; padding: 3px 6px; background: linear-gradient(180deg, #1a5be6, #0841bb); color: #fff; font-family: var(--pix); font-size: 11px; }
+.vid video { display: block; width: 100%; background: #000; }
+.vid.big video { flex: 1; min-height: 0; object-fit: contain; }
+.vid-credit { font-family: var(--pix); font-size: 10.5px; color: #cfe1ff; padding: 4px 8px; }
