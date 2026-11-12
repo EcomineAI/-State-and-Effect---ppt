@@ -6,6 +6,7 @@ import Inline from './Inline.jsx';
 import LiveDemo, { hasDemo } from './Demos.jsx';
 import { DeckContext } from '../deckContext.js';
 import { Confetti, Sparkles } from './Fx.jsx';
+import { audio, ring, fart } from './sfx.js';
 
 /* 1 ─ Title (window centred on the blue desktop, rainbow rule, status bar) */
 export function TitleSlide({ title, subtitle, note, status }) {
@@ -289,16 +290,20 @@ export function IcebreakerSlide() {
   const [shown, setShown] = useState(false);
   const [stage, setStage] = useState(0); // icon question: 0 outline · 1 ringing · 2 revealed
   const timer = React.useRef();
-  React.useEffect(() => () => clearTimeout(timer.current), []);
+  const stopRing = React.useRef();
+  React.useEffect(() => () => { clearTimeout(timer.current); stopRing.current?.(); }, []);
   const item = QUIZ[idx];
   const revealed = item.kind === 'icon' ? stage === 2 : shown;
   const done = item.kind === 'choice' ? picked !== null : revealed;
   const reveal = () => {
     if (item.kind !== 'icon') { setShown(true); return; }
+    const c = audio(); // created inside the click so the browser allows sound
+    stopRing.current?.();
+    if (c) stopRing.current = ring(c);
     setStage(1);
-    timer.current = setTimeout(() => setStage(2), 1600);
+    timer.current = setTimeout(() => { setStage(2); if (c) fart(c); }, 1600);
   };
-  const go = (n) => { clearTimeout(timer.current); setIdx(n); setPicked(null); setShown(false); setStage(0); };
+  const go = (n) => { clearTimeout(timer.current); stopRing.current?.(); setIdx(n); setPicked(null); setShown(false); setStage(0); };
   return (
     <Window title={`icebreaker.exe - Question ${idx + 1} of ${QUIZ.length}`} bar={41}
       status={done ? item.why : item.kind === 'choice' ? 'Answer in the chat: A, B, C or D' : stage === 1 ? 'Incoming call…' : 'Type your answer in the chat, then reveal'}>
