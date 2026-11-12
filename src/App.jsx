@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import slides, { navItems } from './slides.jsx';
+import slides, { navItems, sectionStarts } from './slides.jsx';
+import { Clouds, SectionLoader } from './components/Fx.jsx';
 import { DeckContext } from './deckContext.js';
 
 const W = 960, H = 540, ANIM_MS = 420;
@@ -17,6 +18,8 @@ export default function App() {
   const [scale, setScale] = useState(1);
   const [idle, setIdle] = useState(false);
   const [isFs, setIsFs] = useState(false);
+  const [loading, setLoading] = useState(null);
+  const loadTimer = useRef();
   const curRef = useRef(cur);
   const timer = useRef();
 
@@ -24,6 +27,11 @@ export default function App() {
     const next = clamp(n);
     if (next === curRef.current) return;
     setDir(next > curRef.current ? 1 : -1);
+    if (sectionStarts[next] && next > curRef.current) {
+      setLoading(sectionStarts[next]);
+      clearTimeout(loadTimer.current);
+      loadTimer.current = setTimeout(() => setLoading(null), 1100);
+    }
     setPrev(curRef.current);
     curRef.current = next;
     setCur(next);
@@ -113,6 +121,8 @@ export default function App() {
   return (
     <DeckContext.Provider value={ctx}>
       <div className="deck" ref={rootRef}>
+        <Clouds />
+        {loading && <SectionLoader key={loading} name={loading} />}
         <div className="stage" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
           {slides.map((s, i) => {
             const state = i === cur ? 'active' : i === prev ? 'leaving' : null;

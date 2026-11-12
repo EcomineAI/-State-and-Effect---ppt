@@ -5,6 +5,7 @@ import Code from './Code.jsx';
 import Inline from './Inline.jsx';
 import LiveDemo, { hasDemo } from './Demos.jsx';
 import { DeckContext } from '../deckContext.js';
+import { Confetti, Sparkles } from './Fx.jsx';
 
 /* 1 ─ Title (window centred on the blue desktop, rainbow rule, status bar) */
 export function TitleSlide({ title, subtitle, note, status }) {
@@ -176,7 +177,7 @@ export function RecapSlide({ title, subtitle, steps }) {
     <Window x={59} y={27} w={841} h={481} bar={41} tone="beige" title="Recap - Key Takeaways">
       <div className="recap">
         <div className="recap-head">
-          <Icon name="rocket" size={46} className="recap-icon" />
+          <div className="recap-icon-wrap"><Sparkles /><Icon name="rocket" size={46} className="recap-icon" /></div>
           <div>
             <h2 className="h2">{title}</h2>
             <p className="lead sm">{subtitle}</p>
@@ -258,6 +259,7 @@ export function IcebreakerSlide() {
               {!shown && <button type="button" className="pixbtn sm" onClick={() => setShown(true)}>Reveal answer</button>}
             </div>
           )}
+          {((item.kind === 'choice' && picked === item.answer) || (item.kind === 'id' && shown)) && <Confetti key={idx} />}
           <div className="ib-nav">
             <button type="button" className="mini" disabled={idx === 0} onClick={() => go(idx - 1)}>Prev</button>
             <span>{QUIZ.map((_, i) => <i key={i} className={i === idx ? 'on' : ''} />)}</span>

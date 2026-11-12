@@ -407,4 +407,8 @@ export const navItems = [
   { no: '★', label: 'Recap', slide: TOPIC_START + topics.length * 3 },
 ];
 
+export const sectionStarts = Object.fromEntries(
+  sectionNames.map((name) => [TOPIC_START + topics.findIndex((t) => t.section === name) * 3, name]),
+);
+
 export default slides;

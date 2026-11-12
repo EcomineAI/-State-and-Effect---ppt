@@ -1,4 +1,5 @@
 import { Mark } from './Icons.jsx';
+import { Confetti } from './Fx.jsx';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 /* ───────── engine HUD ───────── */
@@ -247,10 +248,14 @@ const BatchCounter = memo(function BatchCounter({ log }) {
 
 /* catches the real "Too many re-renders" error so the deck keeps running */
 class Catch extends React.Component {
-  constructor(p) { super(p); this.state = { err: null }; }
+  constructor(p) { super(p); this.state = { err: null }; this.ref = React.createRef(); }
   static getDerivedStateFromError(err) { return { err }; }
-  componentDidCatch(err) { this.props.onError(err.message.split('.')[0]); }
-  render() { return this.state.err ? <div className="dm-err"><Mark name="boom" size={12} /> {this.state.err.message.split('.')[0]}</div> : this.props.children; }
+  componentDidCatch(err) {
+    this.props.onError(err.message.split('.')[0]);
+    const win = this.ref.current?.closest('.win');
+    if (win) { win.classList.remove('shake'); void win.offsetWidth; win.classList.add('shake'); setTimeout(() => win.classList.remove('shake'), 600); }
+  }
+  render() { return this.state.err ? <div className="dm-err" ref={this.ref}><Mark name="boom" size={12} /> {this.state.err.message.split('.')[0]}</div> : this.props.children; }
 }
 function BadLoop() {
   const [count, setCount] = useState(0);
@@ -326,7 +331,7 @@ const QuickCheck = memo(function QuickCheck({ log }) {
         <div key={q} className="qa">
           <span>{q}</span>
           {shown[i]
-            ? <b className="ans">{a}</b>
+            ? <b className="ans">{a}<Confetti count={14} /></b>
             : <button type="button" className="mini" onClick={() => setShown(shown.map((s, j) => s || j === i))}>Reveal</button>}
         </div>
       ))}
